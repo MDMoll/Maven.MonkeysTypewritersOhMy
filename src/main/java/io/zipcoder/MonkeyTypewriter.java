@@ -1,5 +1,8 @@
 package io.zipcoder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MonkeyTypewriter {
     public static void main(String[] args) {
         String introduction = "It was the best of times,\n" +
@@ -19,20 +22,39 @@ public class MonkeyTypewriter {
                 "in short, the period was so far like the present period, that some of\n" +
                 "its noisiest authorities insisted on its being received, for good or for\n" +
                 "evil, in the superlative degree of comparison only.";
-
+        
         // Do all of the Monkey / Thread building here
         // For each Copier(one safe and one unsafe), create and start 5 monkeys copying the introduction to
         // A Tale Of Two Cities.
-
-
+        
+        
         // This wait is here because main is still a thread and we want the main method to print the finished copies
         // after enough time has passed.
         try {
-            Thread.sleep(1000);
-        } catch(InterruptedException e) {
-            System.out.println("MAIN INTERRUPTED");
+            Thread.sleep((long) (Math.random() + 1));
+        } catch (InterruptedException e) {
+            System.out.println("Danger! Interruption!");
         }
-
+        
+        UnsafeCopier unsafeCopier = new UnsafeCopier(introduction);
+        startedNewThreads(unsafeCopier, (int) (Math.random() + 3) * 3);
+        
+        SafeCopier safeCopier = new SafeCopier(introduction);
+        startedNewThreads(safeCopier, 5);
+        
         // Print out the copied versions here.
+        System.out.println(unsafeCopier.copiedText);
+        System.out.println("-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-");
+        System.out.println(safeCopier.copiedText);
+    }
+    
+    public static void startedNewThreads(Copier copier, int numberOfThreads) {
+        List<Thread> threads = new ArrayList<Thread>();
+        for (int i = 0; i < numberOfThreads; i++) {
+            threads.add(new Thread(copier));
+        }
+        for (Thread thread : threads) {
+            thread.start();
+        }
     }
 }
